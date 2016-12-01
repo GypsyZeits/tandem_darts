@@ -73,3 +73,167 @@ function run_tandem_darts() {
 
 }
 run_tandem_darts();
+
+/**
+* Registers a new post type
+* @uses $wp_post_types Inserts new post type object into the list
+*
+* @param string  Post type key, must not exceed 20 characters
+* @param array|string  See optional args description above.
+* @return object|WP_Error the registered post type object, or an error object
+*/
+function registerDartPlayerPostType() {
+
+	$labels = array(
+		'name'                => __( 'Players', 'text-domain' ),
+		'singular_name'       => __( 'Player', 'text-domain' ),
+		'add_new'             => _x( 'Add New Player', 'text-domain', 'text-domain' ),
+		'add_new_item'        => __( 'Add New Player', 'text-domain' ),
+		'edit_item'           => __( 'Edit Player', 'text-domain' ),
+		'new_item'            => __( 'New Player', 'text-domain' ),
+		'view_item'           => __( 'View Player', 'text-domain' ),
+		'search_items'        => __( 'Search Players', 'text-domain' ),
+		'not_found'           => __( 'No Players found', 'text-domain' ),
+		'not_found_in_trash'  => __( 'No Players found in Trash', 'text-domain' ),
+		'parent_item_colon'   => __( 'Parent Player:', 'text-domain' ),
+		'menu_name'           => __( 'Players', 'text-domain' ),
+	);
+
+	$args = array(
+		'labels'                   => $labels,
+		'hierarchical'        => false,
+		'description'         => 'Dart Players',
+		'taxonomies'          => array(),
+		'public'              => true,
+		'show_ui'             => true,
+		'show_in_menu'        => true,
+		'show_in_admin_bar'   => true,
+		'menu_position'       => null,
+		'menu_icon'           => null,
+		'show_in_nav_menus'   => true,
+		'publicly_queryable'  => true,
+		'exclude_from_search' => false,
+		'has_archive'         => true,
+		'query_var'           => true,
+		'can_export'          => true,
+		'rewrite'             => true,
+		'capability_type'     => 'post',
+		'supports'            => array(
+			'author', 'thumbnail'
+			)
+	);
+
+	register_post_type( 'dartPlayer', $args );
+}
+
+add_action( 'init', 'registerDartPlayerPostType' );
+
+/**
+* Registers a new post type
+* @uses $wp_post_types Inserts new post type object into the list
+*
+* @param string  Post type key, must not exceed 20 characters
+* @param array|string  See optional args description above.
+* @return object|WP_Error the registered post type object, or an error object
+*/
+function register_dartLeague() {
+
+	$labels = array(
+		'name'                => __( 'Leagues', 'text-domain' ),
+		'singular_name'       => __( 'League', 'text-domain' ),
+		'add_new'             => _x( 'Add New League', 'text-domain', 'text-domain' ),
+		'add_new_item'        => __( 'Add New League', 'text-domain' ),
+		'edit_item'           => __( 'Edit League', 'text-domain' ),
+		'new_item'            => __( 'New League', 'text-domain' ),
+		'view_item'           => __( 'View League', 'text-domain' ),
+		'search_items'        => __( 'Search Leagues', 'text-domain' ),
+		'not_found'           => __( 'No Leauges found', 'text-domain' ),
+		'not_found_in_trash'  => __( 'No Leauges found in Trash', 'text-domain' ),
+		'parent_item_colon'   => __( 'Parent League:', 'text-domain' ),
+		'menu_name'           => __( 'Leagues', 'text-domain' ),
+	);
+
+	$args = array(
+		'labels'                   => $labels,
+		'hierarchical'        => false,
+		'description'         => 'dart leagues',
+		'taxonomies'          => array(),
+		'public'              => true,
+		'show_ui'             => true,
+		'show_in_menu'        => true,
+		'show_in_admin_bar'   => true,
+		'menu_position'       => null,
+		'menu_icon'           => null,
+		'show_in_nav_menus'   => true,
+		'publicly_queryable'  => true,
+		'exclude_from_search' => false,
+		'has_archive'         => true,
+		'query_var'           => true,
+		'can_export'          => true,
+		'rewrite'             => true,
+		'capability_type'     => 'post',
+		'supports'            => array(
+			'title', 'editor', 'author', 'thumbnail',
+			'excerpt', 'trackbacks'
+			)
+	);
+
+	register_post_type( 'dartLeague', $args );
+}
+
+add_action( 'init', 'register_dartLeague' );
+
+/**
+* Registers a new post type
+* @uses $wp_post_types Inserts new post type object into the list
+*
+* @param string  Post type key, must not exceed 20 characters
+* @param array|string  See optional args description above.
+* @return object|WP_Error the registered post type object, or an error object
+*/
+function register_dartMatch() {
+
+	$labels = array(
+		'name'                => __( 'Matches', 'text-domain' ),
+		'singular_name'       => __( 'Match', 'text-domain' ),
+		'add_new'             => _x( 'Add New Match', 'text-domain', 'text-domain' ),
+		'add_new_item'        => __( 'Add New Match', 'text-domain' ),
+		'edit_item'           => __( 'Edit Match', 'text-domain' ),
+		'new_item'            => __( 'New Match', 'text-domain' ),
+		'view_item'           => __( 'View Match', 'text-domain' ),
+		'search_items'        => __( 'Search Matches', 'text-domain' ),
+		'not_found'           => __( 'No Matches found', 'text-domain' ),
+		'not_found_in_trash'  => __( 'No Matches found in Trash', 'text-domain' ),
+		'parent_item_colon'   => __( 'Parent Match:', 'text-domain' ),
+		'menu_name'           => __( 'Matches', 'text-domain' ),
+	);
+
+	$args = array(
+		'labels'                   => $labels,
+		'hierarchical'        => false,
+		'description'         => 'description',
+		'taxonomies'          => array(),
+		'public'              => true,
+		'show_ui'             => true,
+		'show_in_menu'        => true,
+		'show_in_admin_bar'   => true,
+		'menu_position'       => null,
+		'menu_icon'           => null,
+		'show_in_nav_menus'   => true,
+		'publicly_queryable'  => true,
+		'exclude_from_search' => false,
+		'has_archive'         => true,
+		'query_var'           => true,
+		'can_export'          => true,
+		'rewrite'             => true,
+		'capability_type'     => 'post',
+		'supports'            => array(
+			'author'
+			)
+	);
+
+	register_post_type( 'match', $args );
+}
+
+add_action( 'init', 'register_dartMatch' );
+
