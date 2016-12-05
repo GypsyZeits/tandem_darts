@@ -191,18 +191,18 @@ function dartPlayer_save_meta($post_id, $post) {
 	if ( ! wp_is_post_revision( $post->ID ) ){
 	
 		// unhook this function so it doesn't loop infinitely
-		remove_action('save_post', 'dartPlayer_save_meta');
+		remove_action('save_post', 'dartPlayer_save_meta',1, 2);
 	
 		// update the post, which calls save_post again
 		wp_update_post( $updatePlayerTitle);
 
 		// re-hook this function
-		add_action('save_post', 'dartPlayer_save_meta');
+		add_action('save_post', 'dartPlayer_save_meta',1, 2);
 	}
 
 }
 
-add_action('save_post', 'dartPlayer_save_meta'); // save the custom fields
+add_action('save_post', 'dartPlayer_save_meta', 1, 2); // save the custom fields
 
 add_action( 'init', 'registerDartPlayerPostType' );
 
