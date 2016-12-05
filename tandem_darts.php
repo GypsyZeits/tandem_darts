@@ -119,12 +119,90 @@ function registerDartPlayerPostType() {
 		'rewrite'             => true,
 		'capability_type'     => 'post',
 		'supports'            => array(
-			'author', 'thumbnail'
-			)
+			'title','author', 'thumbnail'
+			),
+		'register_meta_box_cb' => 'add_dartPlayer_metaboxes'
 	);
 
 	register_post_type( 'dartPlayer', $args );
 }
+
+function add_dartPlayer_metaboxes(){
+	add_meta_box( 'dartPlayerInfo', 'Player Info', 'dartPlayerInfo', 'dartPlayer', 'normal', 'high' );
+}
+
+function dartPlayerInfo(){
+	global $post;
+
+	// Noncename needed to verify where the data originated
+    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+    $_firstName = get_post_meta( $post->ID, '_firstName', true );
+    $_lastName = get_post_meta( $post->ID, '_lastName', true );
+    $_phoneNumber = get_post_meta( $post->ID, '_phoneNumber', true );
+    $_emailAddress = get_post_meta( $post->ID, '_emailAddress', true );
+
+    echo '<label>First Name: </label><input type="text" name="_firstName" value="' .$_firstName .'"  class="widefat"/>';
+    echo '<label>Last Name: </label><input type="text" name="_lastName" value="' .$_lastName .'"  class="widefat"/>';
+    echo '<label>Phone Number: </label><input type="text" name="_phoneNumber" value="' .$_phoneNumber .'"  class="widefat"/>';
+    echo '<label>Email Address: </label><input type="text" name="_emailAddress" value="'. $_emailAddress .'"  class="widefat"/>';
+
+}
+
+// Save the Metabox Data
+
+function dartPlayer_save_meta($post_id, $post) {
+	
+	// verify this came from the our screen and with proper authorization,
+	// because save_post can be triggered at other times
+	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
+	return $post->ID;
+	}
+
+	// Is the user allowed to edit the post or page?
+	if ( !current_user_can( 'edit_post', $post->ID ))
+		return $post->ID;
+
+	// OK, we're authenticated: we need to find and save the data
+	// We'll put it into an array to make it easier to loop though.
+	
+	$events_meta['_firstName'] = $_POST['_firstName'];
+	$events_meta['_lastName'] = $_POST['_lastName'];
+	$events_meta['_phoneNumber'] = $_POST['_phoneNumber'];
+	$events_meta['_emailAddress'] = $_POST['_emailAddress'];
+
+	
+	// Add values of $events_meta as custom fields
+	
+	foreach ($events_meta as $key => $value) { // Cycle through the $events_meta array!
+		if( $post->post_type == 'revision' ) return; // Don't store custom data twice
+		$value = implode(',', (array)$value); // If $value is an array, make it a CSV (unlikely)
+		if(get_post_meta($post->ID, $key, FALSE)) { // If the custom field already has a value
+			update_post_meta($post->ID, $key, $value);
+		} else { // If the custom field doesn't have a value
+			add_post_meta($post->ID, $key, $value);
+		}
+		if(!$value) delete_post_meta($post->ID, $key); // Delete if blank
+	}
+	$updatePlayerTitle = array(
+		'ID'			=> 	$post->ID,
+		'post_title' 	=>	$events_meta['_lastName'].', '.$events_meta['_firstName']
+	 	);
+	
+	if ( ! wp_is_post_revision( $post->ID ) ){
+	
+		// unhook this function so it doesn't loop infinitely
+		remove_action('save_post', 'dartPlayer_save_meta');
+	
+		// update the post, which calls save_post again
+		wp_update_post( $updatePlayerTitle);
+
+		// re-hook this function
+		add_action('save_post', 'dartPlayer_save_meta');
+	}
+
+}
+
+add_action('save_post', 'dartPlayer_save_meta'); // save the custom fields
 
 add_action( 'init', 'registerDartPlayerPostType' );
 
