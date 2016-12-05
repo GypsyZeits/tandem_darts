@@ -251,14 +251,34 @@ function register_dartLeague() {
 		'rewrite'             => true,
 		'capability_type'     => 'post',
 		'supports'            => array(
-			'title', 'editor', 'author', 'thumbnail',
-			'excerpt', 'trackbacks'
-			)
+			'title', 'editor', 'author', 'thumbnail'
+			),
+		'register_meta_box_cb' => 'add_dartLeague_metaboxes'
 	);
 
 	register_post_type( 'dartLeague', $args );
 }
 
+function add_dartLeague_metaboxes(){
+	//add_meta_box( 'dartLeagueInfo', 'Dart League Info', 'dartLeagueInfo', 'dartLeague' ,'normal', 'high' );
+}
+
+function dartLeagueInfo(){
+	global $post;
+
+	// Noncename needed to verify where the data originated
+    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+    $_leagueName = get_post_meta( $post->ID, '_league', true );
+    $_leagueStartDate = get_post_meta( $post->ID, '_leagueStartDate', true );
+    $_leagueEndDate	= get_post_meta( $post->ID, '_leagueEndDate', true );
+
+
+    echo '<label>League Name</label><input type="text" name="_leagueName" value="' . $_lastName .'" class="widefat"/>';
+    echo '<label>League Start Date</label><input type="date" name="_leagueStartDate"' . $_leagueStartDate .'" />';
+    echo '<label>League End Date</label><input type="date" name="_leagueEndDate"' . $_leagueEndDate .'" />';
+}
+
+add_action( 'init', 'add_dartLeague_metaboxes' );
 add_action( 'init', 'register_dartLeague' );
 
 /**
