@@ -188,7 +188,7 @@ function dartPlayer_save_meta($post_id, $post) {
 		'post_title' 	=>	$events_meta['_lastName'].', '.$events_meta['_firstName']
 	 	);
 	
-	if ( ! wp_is_post_revision( $post->ID ) ){
+	if ( ! wp_is_post_revision( $post->ID ) && $post->post_type == 'dartPlayer' ){
 	
 		// unhook this function so it doesn't loop infinitely
 		remove_action('save_post', 'dartPlayer_save_meta',1, 2);
@@ -260,7 +260,7 @@ function register_dartLeague() {
 }
 
 function add_dartLeague_metaboxes(){
-	//add_meta_box( 'dartLeagueInfo', 'Dart League Info', 'dartLeagueInfo', 'dartLeague' ,'normal', 'high' );
+	add_meta_box( 'dartLeagueInfo', 'Dart League Info', 'dartLeagueInfo', 'dartLeague' ,'normal', 'high' );
 }
 
 function dartLeagueInfo(){
@@ -268,17 +268,49 @@ function dartLeagueInfo(){
 
 	// Noncename needed to verify where the data originated
     echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-    $_leagueName = get_post_meta( $post->ID, '_league', true );
     $_leagueStartDate = get_post_meta( $post->ID, '_leagueStartDate', true );
     $_leagueEndDate	= get_post_meta( $post->ID, '_leagueEndDate', true );
 
-
-    echo '<label>League Name</label><input type="text" name="_leagueName" value="' . $_lastName .'" class="widefat"/>';
-    echo '<label>League Start Date</label><input type="date" name="_leagueStartDate"' . $_leagueStartDate .'" />';
-    echo '<label>League End Date</label><input type="date" name="_leagueEndDate"' . $_leagueEndDate .'" />';
+    echo '<label>League Start Date</label><input type="date" name="_leagueStartDate" value="' . $_leagueStartDate .'" />';
+    echo '<br /><label>League End Date</label><input type="date" name="_leagueEndDate" value="' . $_leagueEndDate .'" />';
 }
 
-add_action( 'init', 'add_dartLeague_metaboxes' );
+function dartLeague_save_meta($post_id, $post) {
+	
+	// verify this came from the our screen and with proper authorization,
+	// because save_post can be triggered at other times
+	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
+	return $post->ID;
+	}
+
+	// Is the user allowed to edit the post or page?
+	if ( !current_user_can( 'edit_post', $post->ID ))
+		return $post->ID;
+
+	// OK, we're authenticated: we need to find and save the data
+	// We'll put it into an array to make it easier to loop though.
+	
+	$league_meta['_leagueStartDate'] = $_POST['_leagueStartDate'];
+	$league_meta['_leagueEndDate'] = $_POST['_leagueEndDate'];
+
+	
+	// Add values of $events_meta as custom fields
+	
+	foreach ($league_meta as $key => $value) { // Cycle through the $events_meta array!
+		if( $post->post_type == 'revision' ) return; // Don't store custom data twice
+		$value = implode(',', (array)$value); // If $value is an array, make it a CSV (unlikely)
+		if(get_post_meta($post->ID, $key, FALSE)) { // If the custom field already has a value
+			update_post_meta($post->ID, $key, $value);
+		} else { // If the custom field doesn't have a value
+			add_post_meta($post->ID, $key, $value);
+		}
+		if(!$value) delete_post_meta($post->ID, $key); // Delete if blank
+	}
+
+}
+
+add_action( 'save_post', 'dartLeague_save_meta', 1, 2 );
+
 add_action( 'init', 'register_dartLeague' );
 
 /**
