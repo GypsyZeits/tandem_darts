@@ -97,7 +97,7 @@ function registerDartPlayerPostType() {
 		'not_found_in_trash'  => __( 'No Players found in Trash', 'text-domain' ),
 		'parent_item_colon'   => __( 'Parent Player:', 'text-domain' ),
 		'menu_name'           => __( 'Players', 'text-domain' ),
-	);
+		);
 
 	$args = array(
 		'labels'                   => $labels,
@@ -122,7 +122,7 @@ function registerDartPlayerPostType() {
 			'title','author', 'thumbnail'
 			),
 		'register_meta_box_cb' => 'add_dartPlayer_metaboxes'
-	);
+		);
 
 	register_post_type( 'dartPlayer', $args );
 }
@@ -135,16 +135,16 @@ function dartPlayerInfo(){
 	global $post;
 
 	// Noncename needed to verify where the data originated
-    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-    $_firstName = get_post_meta( $post->ID, '_firstName', true );
-    $_lastName = get_post_meta( $post->ID, '_lastName', true );
-    $_phoneNumber = get_post_meta( $post->ID, '_phoneNumber', true );
-    $_emailAddress = get_post_meta( $post->ID, '_emailAddress', true );
+	echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+	$_firstName = get_post_meta( $post->ID, '_firstName', true );
+	$_lastName = get_post_meta( $post->ID, '_lastName', true );
+	$_phoneNumber = get_post_meta( $post->ID, '_phoneNumber', true );
+	$_emailAddress = get_post_meta( $post->ID, '_emailAddress', true );
 
-    echo '<label>First Name: </label><input type="text" name="_firstName" value="' .$_firstName .'"  class="widefat"/>';
-    echo '<label>Last Name: </label><input type="text" name="_lastName" value="' .$_lastName .'"  class="widefat"/>';
-    echo '<label>Phone Number: </label><input type="text" name="_phoneNumber" value="' .$_phoneNumber .'"  class="widefat"/>';
-    echo '<label>Email Address: </label><input type="text" name="_emailAddress" value="'. $_emailAddress .'"  class="widefat"/>';
+	echo '<label>First Name: </label><input type="text" name="_firstName" value="' .$_firstName .'"  class="widefat"/>';
+	echo '<label>Last Name: </label><input type="text" name="_lastName" value="' .$_lastName .'"  class="widefat"/>';
+	echo '<label>Phone Number: </label><input type="text" name="_phoneNumber" value="' .$_phoneNumber .'"  class="widefat"/>';
+	echo '<label>Email Address: </label><input type="text" name="_emailAddress" value="'. $_emailAddress .'"  class="widefat"/>';
 
 }
 
@@ -155,7 +155,7 @@ function dartPlayer_save_meta($post_id, $post) {
 	// verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
-	return $post->ID;
+		return $post->ID;
 	}
 
 	// Is the user allowed to edit the post or page?
@@ -179,20 +179,20 @@ function dartPlayer_save_meta($post_id, $post) {
 		if(get_post_meta($post->ID, $key, FALSE)) { // If the custom field already has a value
 			update_post_meta($post->ID, $key, $value);
 		} else { // If the custom field doesn't have a value
-			add_post_meta($post->ID, $key, $value);
-		}
+		add_post_meta($post->ID, $key, $value);
+	}
 		if(!$value) delete_post_meta($post->ID, $key); // Delete if blank
 	}
 	$updatePlayerTitle = array(
 		'ID'			=> 	$post->ID,
 		'post_title' 	=>	$events_meta['_lastName'].', '.$events_meta['_firstName']
-	 	);
+		);
 	
 	if ( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartplayer' ){
-	
+		
 		// unhook this function so it doesn't loop infinitely
 		remove_action('save_post', 'dartPlayer_save_meta',1, 2);
-	
+		
 		// update the post, which calls save_post again
 		wp_update_post( $updatePlayerTitle);
 
@@ -229,7 +229,7 @@ function register_dartLeague() {
 		'not_found_in_trash'  => __( 'No Leauges found in Trash', 'text-domain' ),
 		'parent_item_colon'   => __( 'Parent League:', 'text-domain' ),
 		'menu_name'           => __( 'Leagues', 'text-domain' ),
-	);
+		);
 
 	$args = array(
 		'labels'                   => $labels,
@@ -254,7 +254,7 @@ function register_dartLeague() {
 			'title', 'editor', 'author', 'thumbnail'
 			),
 		'register_meta_box_cb' => 'add_dartLeague_metaboxes'
-	);
+		);
 
 	register_post_type( 'dartLeague', $args );
 }
@@ -267,12 +267,12 @@ function dartLeagueInfo(){
 	global $post;
 
 	// Noncename needed to verify where the data originated
-    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-    $_leagueStartDate = get_post_meta( $post->ID, '_leagueStartDate', true );
-    $_leagueEndDate	= get_post_meta( $post->ID, '_leagueEndDate', true );
+	echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+	$_leagueStartDate = get_post_meta( $post->ID, '_leagueStartDate', true );
+	$_leagueEndDate	= get_post_meta( $post->ID, '_leagueEndDate', true );
 
-    echo '<label>League Start Date</label><input type="date" name="_leagueStartDate" value="' . $_leagueStartDate .'" />';
-    echo '<br /><label>League End Date</label><input type="date" name="_leagueEndDate" value="' . $_leagueEndDate .'" />';
+	echo '<label>League Start Date</label><input type="date" name="_leagueStartDate" value="' . $_leagueStartDate .'" />';
+	echo '<br /><label>League End Date</label><input type="date" name="_leagueEndDate" value="' . $_leagueEndDate .'" />';
 }
 
 function dartLeague_save_meta($post_id, $post) {
@@ -280,7 +280,7 @@ function dartLeague_save_meta($post_id, $post) {
 	// verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
-	return $post->ID;
+		return $post->ID;
 	}
 
 	// Is the user allowed to edit the post or page?
@@ -302,8 +302,8 @@ function dartLeague_save_meta($post_id, $post) {
 		if(get_post_meta($post->ID, $key, FALSE)) { // If the custom field already has a value
 			update_post_meta($post->ID, $key, $value);
 		} else { // If the custom field doesn't have a value
-			add_post_meta($post->ID, $key, $value);
-		}
+		add_post_meta($post->ID, $key, $value);
+	}
 		if(!$value) delete_post_meta($post->ID, $key); // Delete if blank
 	}
 
@@ -336,7 +336,7 @@ function register_dartMatch() {
 		'not_found_in_trash'  => __( 'No Matches found in Trash', 'text-domain' ),
 		'parent_item_colon'   => __( 'Parent Match:', 'text-domain' ),
 		'menu_name'           => __( 'Matches', 'text-domain' ),
-	);
+		);
 
 	$args = array(
 		'labels'                   => $labels,
@@ -361,7 +361,7 @@ function register_dartMatch() {
 			'title','author'
 			),
 		'register_meta_box_cb' => 'add_dartMatch_metaboxes'
-	);
+		);
 
 	register_post_type( 'dartMatch', $args );
 }
@@ -375,108 +375,113 @@ function dartMatchInfo(){
 	$savePostId = $post->ID;
 
 	// Noncename needed to verify where the data originated
-    echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-    $_leagueID = get_post_meta( $post->ID, '_leagueID', true );
-    $_player1 = get_post_meta( $post->ID, '_player1', true );
-    $_player2 = get_post_meta( $post->ID, '_player2', true );
-    $_matchDate = get_post_meta($post->ID, '_matchDate', true);
-    $_matchTime = get_post_meta( $post->ID, '_matchTime', true );
-    $_matchWinner = get_post_meta( $post->ID, '_matchWinner', true);
+	echo '<input type="hidden" name="eventmeta_noncename" id="eventmeta_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+	$_leagueID = get_post_meta( $post->ID, '_leagueID', true );
+	$_player1 = get_post_meta( $post->ID, '_player1', true );
+	$_player2 = get_post_meta( $post->ID, '_player2', true );
+	$_matchDate = get_post_meta($post->ID, '_matchDate', true);
+	$_matchTime = get_post_meta( $post->ID, '_matchTime', true );
+	$_matchWinner = get_post_meta( $post->ID, '_matchWinner', true);
 
 
-    $args = array(
+	$args = array(
     		//Type & Status Parameters
-    		'post_type'   => 'dartLeague',
-    		'post_status' => 'publish',
-    		
+		'post_type'   => 'dartLeague',
+		'post_status' => 'publish',
+		
     		//Order & Orderby Parameters
-    		'order'               => 'DESC',
-    		'orderby'             => 'meta',
-    		'meta_key'=>'_leagueEndDate',
-    		
+		'order'               => 'DESC',
+		'orderby'             => 'meta',
+		'meta_key'=>'_leagueEndDate',
+		
     		//Pagination Parameters
-    		'posts_per_page'         => -1,
-    		'nopaging'               => true,
-    	);
-    
-    $query = new WP_Query( $args );
+		'posts_per_page'         => -1,
+		'nopaging'               => true,
+		);
+	
+	$query = new WP_Query( $args );
 
-   	echo '<label>League</label><select name="_leagueID">';
-   	echo '<option value=""></option>';
-    if ($query->have_posts()){
-    	 while ($query->have_posts()){
-    		$query->the_post();
-
-    	 	echo '<option ';
-    	 	if (get_the_ID() == $_leagueID){echo 'selected ';}
-    	 	echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
-    	}
-    	wp_reset_postdata();
-    }
-    echo '</select>';
-
-    $args = array(
-    		//Type & Status Parameters
-    		'post_type'   => 'dartPlayer',
-    		'post_status' => 'publish',
-    		
-    		//Order & Orderby Parameters
-    		'order'               => 'ASC',
-    		'orderby'             => 'meta',
-    		'meta_key'=>'_lastName',
-    		
-    		//Pagination Parameters
-    		'posts_per_page'         => -1,
-    		'nopaging'               => true,
-    	);
-    
-    $query = new WP_Query( $args );
-
-    echo '<br /><label>Player 1</label><select name="_player1">';
-   	echo '<option value=""></option>';
-   	if ($query->have_posts()){
-    	 while ($query->have_posts()){
-    		$query->the_post();
+	echo '<label>League</label><select name="_leagueID">';
+	echo '<option value=""></option>';
+	if ($query->have_posts()){
+		while ($query->have_posts()){
+			$query->the_post();
 
 			echo '<option ';
-    	 	if (get_the_ID() == $_player1){echo 'selected ';}
-    	 	echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
-    	}
-    	wp_reset_postdata();
-    }
-    echo '</select>';
+			if (get_the_ID() == $_leagueID){echo 'selected ';}
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+		}
+		wp_reset_postdata();
+	}
+	echo '</select>';
 
-    $query = new WP_Query( $args );
+	$args = array(
+    		//Type & Status Parameters
+		'post_type'   => 'dartPlayer',
+		'post_status' => 'publish',
+		
+    		//Order & Orderby Parameters
+		'order'               => 'ASC',
+		'orderby'             => 'meta',
+		'meta_key'=>'_lastName',
+		
+    		//Pagination Parameters
+		'posts_per_page'         => -1,
+		'nopaging'               => true,
+		);
+	
+	$query = new WP_Query( $args );
 
-    echo '<br /><label>Player 2</label><select name="_player2">';
-   	echo '<option value=""></option>';
-   	if ($query->have_posts()){
-    	 while ($query->have_posts()){
-    		$query->the_post();
+	echo '<br /><label>Player 1</label><select name="_player1">';
+	echo '<option value=""></option>';
+	if ($query->have_posts()){
+		while ($query->have_posts()){
+			$query->the_post();
 
-    	 	echo '<option ';
-    	 	if (get_the_ID() == $_player2){echo 'selected ';}
-    	 	echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
-    	}
-    	wp_reset_postdata();
-    }
-    echo '</select>';
-    
+			echo '<option ';
+			if (get_the_ID() == $_player1){echo 'selected ';}
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+		}
+		wp_reset_postdata();
+	}
+	echo '</select>';
 
-    $post=get_post( $savePostId);
-    
+	$query = new WP_Query( $args );
 
-    echo '<br /><label>Match Date</label><input type="date" name="_matchDate" value="' . $_matchDate .'" />';
-    echo '<br /><label>Match Time</label><input type="time" name="_matchTime" value="' . $_matchTime .'" />';
-    echo '<br /><label>Match Winner</label><select name="_matchWinner">';
-   	echo '<option value=""></option>';
-    echo '<option ';
-  	if (get_post_meta( $post->ID, '_matchWinner', true ) == $_player1 ){echo 'selected ';}
-	echo 'value="'.$_player1.'">'.get_post($_player1)->post_title.'</option>';
-   	echo '<option ';
-   	if (get_post_meta( $post->ID, '_matchWinner', true ) == $_player2 ){echo 'selected ';}
-   	echo 'value="'.$_player2.'">'.get_post($_player2)->post_title.'</option>';
-    echo '</select>';
+	echo '<br /><label>Player 2</label><select name="_player2">';
+	echo '<option value=""></option>';
+	if ($query->have_posts()){
+		while ($query->have_posts()){
+			$query->the_post();
+
+			echo '<option ';
+			if (get_the_ID() == $_player2){echo 'selected ';}
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+		}
+		wp_reset_postdata();
+	}
+	echo '</select>';
+	
+
+	$post=get_post( $savePostId);
+	
+
+	echo '<br /><label>Match Date</label><input type="date" name="_matchDate" value="' . $_matchDate .'" />';
+	echo '<br /><label>Match Time</label><input type="time" name="_matchTime" value="' . $_matchTime .'" />';
+	echo '<br /><label>Match Winner</label><select name="_matchWinner">';
+	echo '<option value=""></option>';
+	if ($_player1 != null) {
+		echo '<option ';
+		if (get_post_meta( $post->ID, '_matchWinner', true ) == $_player1 ){echo 'selected ';}
+		echo 'value="'.$_player1.'">'.get_post($_player1)->post_title.'</option>';
+	}
+	if ($_player2 != null) {
+		echo '<option ';
+		if (get_post_meta( $post->ID, '_matchWinner', true ) == $_player2 ){echo 'selected ';}
+		echo 'value="'.$_player2.'">'.get_post($_player2)->post_title.'</option>';
+		
+	}
+	echo '</select>';
 
 }
 
@@ -485,7 +490,7 @@ function dartMatch_save_meta($post_id, $post){
 // verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
-	return $post->ID;
+		return $post->ID;
 	}
 
 	// Is the user allowed to edit the post or page?
@@ -510,22 +515,22 @@ function dartMatch_save_meta($post_id, $post){
 		if(get_post_meta($post->ID, $key, FALSE)) { // If the custom field already has a value
 			update_post_meta($post->ID, $key, $value);
 		} else { // If the custom field doesn't have a value
-			add_post_meta($post->ID, $key, $value);
-		}
+		add_post_meta($post->ID, $key, $value);
+	}
 		if(!$value) delete_post_meta($post->ID, $key); // Delete if blank
 	}
 	$updateMatchTitle = array(
 		'ID'			=> 	$post->ID,
 		'post_title' 	=>	$events_meta['_matchDate'].' '.get_the_title($events_meta['_leagueID']).
-							' - '. get_the_title($events_meta['_player1']).' vs '. get_the_title($events_meta['_player2'])
-	 	);
+		' - '. get_the_title($events_meta['_player1']).' vs '. get_the_title($events_meta['_player2'])
+		);
 	echo var_dump(( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartMatch' ));
 
 	if ( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartmatch' ){
-	
+		
 		// unhook this function so it doesn't loop infinitely
 		remove_action('save_post', 'dartMatch_save_meta',1, 2);
-	
+		
 		// update the post, which calls save_post again
 		wp_update_post( $updateMatchTitle);
 
