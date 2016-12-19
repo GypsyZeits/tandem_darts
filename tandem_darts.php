@@ -521,11 +521,16 @@ function dartMatch_save_meta($post_id, $post){
 	}
 	$updateMatchTitle = array(
 		'ID'			=> 	$post->ID,
-		'post_title' 	=>	$events_meta['_matchDate'].' '.get_the_title($events_meta['_leagueID']).
-		' - '. get_the_title($events_meta['_player1']).' vs '. get_the_title($events_meta['_player2'])
+		'post_title' 	=>	$events_meta['_matchDate'].', '.get_the_title($events_meta['_leagueID']).
+		', '. get_the_title($events_meta['_player1']).' vs '. get_the_title($events_meta['_player2'])
 		);
-	echo var_dump(( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartMatch' ));
-
+ 	//var_dump(( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartMatch' ));
+	if ($events_meta['_matchTime']){
+		$updateMatchTitle['post_title'] .= ' '.date('g:ia',strtotime($events_meta['_matchTime']));
+	}
+	if ($events_meta['_matchWinner']){
+		$updateMatchTitle['post_title'] .= ' Winner: '.get_the_title($events_meta['_matchWinner']);
+	}
 	if ( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartmatch' ){
 		
 		// unhook this function so it doesn't loop infinitely
@@ -543,3 +548,154 @@ function dartMatch_save_meta($post_id, $post){
 add_action( 'save_post', 'dartMatch_save_meta', 1, 2 );
 add_action( 'init', 'register_dartMatch' );
 
+function schedule_of_matches ($atts){
+	$content = null;
+
+	//check that league was supplied then setup new defaults
+	if ($atts['league'] == null){
+		return "No League Designated";
+	}
+
+	$league = get_page_by_title( $atts['league'], "OBJECT",'dartleague');
+	$league_meta = get_post_meta( $league->ID );
+	//var_dump($league);
+	//var_dump($league_meta);
+
+	//figure out start date: Now option, no startdate specified with league start date,
+	//no startdate specified and implied no league, finally date is processed and formated if entered by hand
+	 if ($atts['startdate'] == 'now' ){
+	 	$atts['startdate'] = date('Y-m-d');
+ 	 	}
+  	elseif (!$atts['startdate'] and $league_meta['_leagueStartDate'][0] ){
+  		$atts['startdate'] = $league_meta['_leagueStartDate'][0];
+  	}
+
+ 	elseif (!$atts['startdate']){
+ 		$atts['startdate'] = date('Y-m-d');
+ 	}
+ 	else {
+ 		$atts['startdate'] = date('Y-m-d', strtotime($atts['startdate']));
+ 	}
+	
+ 	//due end date similarly but default is +1 year, supports now for some reason
+
+ 	if ($atts['enddate'] == 'now'){
+		$atts['enddate'] = date('Y-m-d');
+ 	}
+ 	else if (!$atts['enddate'] and $league_meta['_leagueEndDate'][0] ){
+ 		$atts['enddate'] = $league_meta['_leagueEndDate'][0];
+ 	}
+ 	else if (!$atts['enddate']){
+ 		$atts['enddate'] = date('Y-m-d');
+ 	}
+ 	else {
+ 		$atts['enddate'] = date('Y-m-d', strtotime($atts['enddate']));
+ 	}
+	//var_dump($atts);
+		/**
+		 * The WordPress Query class.
+		 * @link http://codex.wordpress.org/Function_Reference/WP_Query
+		 *
+		 */
+		$args = array(
+			
+			//Type & Status Parameters
+			'post_type'   => 'dartmatch',
+			'post_status' => 'publish',
+
+			
+			//Order & Orderby Parameters
+			'order'               => 'ASC',
+			'orderby'             => 'meta_value',
+			'meta_key'			  => '_matchDate',
+			'meta_type'			  => 'DATE',
+			
+			//Pagination Parameters
+			'nopaging'               => true,
+			
+			//Custom Field Parameters
+			'meta_query'     => array(
+				'relation' 	 => 'AND',
+				
+				array(
+					'key' => '_matchDate',
+					'value' => $atts['startdate'],
+					'type' => 'DATE',
+					'compare' => '>='
+				),
+				array(
+					'key' => '_matchDate',
+					'value' => $atts['enddate'],
+					'type' => 'DATE',
+					'compare' => '<='
+				),
+				array(
+					'key' => '_leagueID',
+					'value' => $league->ID,
+					'type' => 'NUM',
+					'compare' => '='
+				))
+			
+		);
+	var_dump($args);
+	$query = new WP_Query( $args );
+	//var_dump($query->have_posts());
+	if ($query->have_posts()){
+		while ($query->have_posts()){
+			$query->the_post();
+			$matchMeta = get_post_meta( get_the_ID() );
+
+			//var_dump($matchMeta);
+			$returnContent .= the_title( '<p>', '</p>', false );
+			if ($matchMeta[_matchTime][0]){
+				$returnContent.= '<p>'.date("g:i a", strtotime($matchMeta[_matchTime][0])).'</p>';
+			}
+			if ($matchMeta[_matchTime][0]){
+
+			}
+		}
+		wp_reset_postdata();
+	}
+
+	
+
+	if ($returnContent == null) {
+		$returnContent = "Sorry there are no scheduled matches currently.";
+	}
+	return $returnContent;
+}
+
+add_shortcode( "schedule_of_matches", "schedule_of_matches" );
+
+add_filter( 'template_include', 'dart_template' );
+
+function dart_template( $template ) {
+	$new_template;
+
+	if ( get_post_type() == "dartleague" && !is_archive() ) {
+		$new_template = dirname(__FILE__)."/single-dartleague.php";
+	}
+	else if ( get_post_type() == "dartleague" && is_archive() ) {
+		$new_template = dirname(__FILE__)."/archive-dartleague.php";
+	}
+	else if ( get_post_type() == "dartplayer" && !is_archive() ) {
+		$new_template = dirname(__FILE__)."/single-dartplayer.php";
+	}
+	else if ( get_post_type() == "dartplayer" && is_archive() ) {
+		$new_template = dirname(__FILE__)."/archive-dartplayer.php";
+	}
+	else if ( get_post_type() == "dartmatch" && !is_archive() ) {
+		$new_template = dirname(__FILE__)."/single-dartmatch.php";
+	}
+	else if ( get_post_type() == "dartmatche" && is_archive() ) {
+		$new_template = dirname(__FILE__)."/archive-dartmatch.php";
+	}
+	var_dump( get_post_type() == "dartleague" && is_archive() );
+
+
+	if ( '' != $new_template ) {
+			return $new_template ;
+		}
+	var_dump( get_post_type() == "dartleague" && is_archive() );
+	return $template;
+}
