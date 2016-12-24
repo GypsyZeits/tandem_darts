@@ -151,7 +151,7 @@ function dartPlayerInfo(){
 // Save the Metabox Data
 
 function dartPlayer_save_meta($post_id, $post) {
-	
+
 	// verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
@@ -164,15 +164,15 @@ function dartPlayer_save_meta($post_id, $post) {
 
 	// OK, we're authenticated: we need to find and save the data
 	// We'll put it into an array to make it easier to loop though.
-	
+
 	$events_meta['_firstName'] = $_POST['_firstName'];
 	$events_meta['_lastName'] = $_POST['_lastName'];
 	$events_meta['_phoneNumber'] = $_POST['_phoneNumber'];
 	$events_meta['_emailAddress'] = $_POST['_emailAddress'];
 
-	
+
 	// Add values of $events_meta as custom fields
-	
+
 	foreach ($events_meta as $key => $value) { // Cycle through the $events_meta array!
 		if( $post->post_type == 'revision' ) return; // Don't store custom data twice
 		$value = implode(',', (array)$value); // If $value is an array, make it a CSV (unlikely)
@@ -187,12 +187,12 @@ function dartPlayer_save_meta($post_id, $post) {
 		'ID'			=> 	$post->ID,
 		'post_title' 	=>	$events_meta['_lastName'].', '.$events_meta['_firstName']
 		);
-	
+
 	if ( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartplayer' ){
-		
+
 		// unhook this function so it doesn't loop infinitely
 		remove_action('save_post', 'dartPlayer_save_meta',1, 2);
-		
+
 		// update the post, which calls save_post again
 		wp_update_post( $updatePlayerTitle);
 
@@ -276,7 +276,7 @@ function dartLeagueInfo(){
 }
 
 function dartLeague_save_meta($post_id, $post) {
-	
+
 	// verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( !wp_verify_nonce( $_POST['eventmeta_noncename'], plugin_basename(__FILE__) )) {
@@ -289,13 +289,13 @@ function dartLeague_save_meta($post_id, $post) {
 
 	// OK, we're authenticated: we need to find and save the data
 	// We'll put it into an array to make it easier to loop though.
-	
+
 	$league_meta['_leagueStartDate'] = $_POST['_leagueStartDate'];
 	$league_meta['_leagueEndDate'] = $_POST['_leagueEndDate'];
 
-	
+
 	// Add values of $events_meta as custom fields
-	
+
 	foreach ($league_meta as $key => $value) { // Cycle through the $events_meta array!
 		if( $post->post_type == 'revision' ) return; // Don't store custom data twice
 		$value = implode(',', (array)$value); // If $value is an array, make it a CSV (unlikely)
@@ -388,17 +388,17 @@ function dartMatchInfo(){
     		//Type & Status Parameters
 		'post_type'   => 'dartLeague',
 		'post_status' => 'publish',
-		
+
     		//Order & Orderby Parameters
 		'order'               => 'DESC',
 		'orderby'             => 'meta',
 		'meta_key'=>'_leagueEndDate',
-		
+
     		//Pagination Parameters
 		'posts_per_page'         => -1,
 		'nopaging'               => true,
 		);
-	
+
 	$query = new WP_Query( $args );
 
 	echo '<label>League</label><select name="_leagueID">';
@@ -409,7 +409,7 @@ function dartMatchInfo(){
 
 			echo '<option ';
 			if (get_the_ID() == $_leagueID){echo 'selected ';}
-			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>';
 		}
 		wp_reset_postdata();
 	}
@@ -419,17 +419,17 @@ function dartMatchInfo(){
     		//Type & Status Parameters
 		'post_type'   => 'dartPlayer',
 		'post_status' => 'publish',
-		
+
     		//Order & Orderby Parameters
 		'order'               => 'ASC',
 		'orderby'             => 'meta',
 		'meta_key'=>'_lastName',
-		
+
     		//Pagination Parameters
 		'posts_per_page'         => -1,
 		'nopaging'               => true,
 		);
-	
+
 	$query = new WP_Query( $args );
 
 	echo '<br /><label>Player 1</label><select name="_player1">';
@@ -440,7 +440,7 @@ function dartMatchInfo(){
 
 			echo '<option ';
 			if (get_the_ID() == $_player1){echo 'selected ';}
-			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>';
 		}
 		wp_reset_postdata();
 	}
@@ -456,15 +456,15 @@ function dartMatchInfo(){
 
 			echo '<option ';
 			if (get_the_ID() == $_player2){echo 'selected ';}
-			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>'; 
+			echo 'value="'.get_the_ID().'">'.get_the_title().'</option>';
 		}
 		wp_reset_postdata();
 	}
 	echo '</select>';
-	
+
 
 	$post=get_post( $savePostId);
-	
+
 
 	echo '<br /><label>Match Date</label><input type="date" name="_matchDate" value="' . $_matchDate .'" />';
 	echo '<br /><label>Match Time</label><input type="time" name="_matchTime" value="' . $_matchTime .'" />';
@@ -479,7 +479,7 @@ function dartMatchInfo(){
 		echo '<option ';
 		if (get_post_meta( $post->ID, '_matchWinner', true ) == $_player2 ){echo 'selected ';}
 		echo 'value="'.$_player2.'">'.get_post($_player2)->post_title.'</option>';
-		
+
 	}
 	echo '</select>';
 
@@ -506,9 +506,9 @@ function dartMatch_save_meta($post_id, $post){
 	$events_meta['_matchDate'] = $_POST['_matchDate'];
 	$events_meta['_matchTime'] = $_POST['_matchTime'];
 	$events_meta['_matchWinner'] = $_POST['_matchWinner'];
-	
+
 	// Add values of $events_meta as custom fields
-	
+
 	foreach ($events_meta as $key => $value) { // Cycle through the $events_meta array!
 		if( $post->post_type == 'revision' ) return; // Don't store custom data twice
 		$value = implode(',', (array)$value); // If $value is an array, make it a CSV (unlikely)
@@ -532,10 +532,10 @@ function dartMatch_save_meta($post_id, $post){
 		$updateMatchTitle['post_title'] .= ' Winner: '.get_the_title($events_meta['_matchWinner']);
 	}
 	if ( ! wp_is_post_revision( $post->ID ) && get_post_type($post->ID) == 'dartmatch' ){
-		
+
 		// unhook this function so it doesn't loop infinitely
 		remove_action('save_post', 'dartMatch_save_meta',1, 2);
-		
+
 		// update the post, which calls save_post again
 		wp_update_post( $updateMatchTitle);
 
@@ -576,7 +576,7 @@ function schedule_of_matches ($atts){
  	else {
  		$atts['startdate'] = date('Y-m-d', strtotime($atts['startdate']));
  	}
-	
+
  	//due end date similarly but default is +1 year, supports now for some reason
 
  	if ($atts['enddate'] == 'now'){
@@ -598,25 +598,25 @@ function schedule_of_matches ($atts){
 		 *
 		 */
 		$args = array(
-			
+
 			//Type & Status Parameters
 			'post_type'   => 'dartmatch',
 			'post_status' => 'publish',
 
-			
+
 			//Order & Orderby Parameters
 			'order'               => 'ASC',
 			'orderby'             => 'meta_value',
 			'meta_key'			  => '_matchDate',
 			'meta_type'			  => 'DATE',
-			
+
 			//Pagination Parameters
 			'nopaging'               => true,
-			
+
 			//Custom Field Parameters
 			'meta_query'     => array(
 				'relation' 	 => 'AND',
-				
+
 				array(
 					'key' => '_matchDate',
 					'value' => $atts['startdate'],
@@ -635,9 +635,9 @@ function schedule_of_matches ($atts){
 					'type' => 'NUM',
 					'compare' => '='
 				))
-			
+
 		);
-	var_dump($args);
+	//var_dump($args);
 	$query = new WP_Query( $args );
 	//var_dump($query->have_posts());
 	if ($query->have_posts()){
@@ -657,7 +657,7 @@ function schedule_of_matches ($atts){
 		wp_reset_postdata();
 	}
 
-	
+
 
 	if ($returnContent == null) {
 		$returnContent = "Sorry there are no scheduled matches currently.";
@@ -690,12 +690,12 @@ function dart_template( $template ) {
 	else if ( get_post_type() == "dartmatche" && is_archive() ) {
 		$new_template = dirname(__FILE__)."/archive-dartmatch.php";
 	}
-	var_dump( get_post_type() == "dartleague" && is_archive() );
+	//var_dump( get_post_type() == "dartleague" && is_archive() );
 
 
 	if ( '' != $new_template ) {
 			return $new_template ;
 		}
-	var_dump( get_post_type() == "dartleague" && is_archive() );
+	//var_dump( get_post_type() == "dartleague" && is_archive() );
 	return $template;
 }
